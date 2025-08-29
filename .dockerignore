@@ -1,0 +1,23 @@
+# Environments
+venv/
+.env
+
+# Logs
+logs/
+
+# Git
+.git
+.gitignore
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# IDE files
+.vscode/
+.idea/
+
+# Temp files
+.DS_Store 
