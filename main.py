@@ -6,6 +6,7 @@ from datetime import datetime
 import psycopg2
 from dotenv import load_dotenv
 import urllib.parse
+import argparse
 
 load_dotenv()
 
@@ -83,7 +84,7 @@ def insert_rate(cursor, rate, provider_info):
         print(f"Database error: {str(e)}")
         return False
 
-def main():
+def run(dry_run: bool = False):
     # Load providers configuration
     providers = load_providers()
     if not providers:
@@ -99,14 +100,19 @@ def main():
         for country in currency_info["operating_countries"]:
             all_operating_countries.add(country.lower())
     
-    # Connect to database
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        print("Connected to database successfully")
-    except Exception as e:
-        print(f"Failed to connect to database: {str(e)}")
-        return
+    # Connect to database unless dry-run
+    conn = None
+    cursor = None
+    if dry_run:
+        print("[DRY-RUN] Skipping database connection and writes")
+    else:
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            print("Connected to database successfully")
+        except Exception as e:
+            print(f"Failed to connect to database: {str(e)}")
+            return
     
     try:
         # Process each sending currency and receiving country
@@ -137,14 +143,17 @@ def main():
                         "created_at": created_at
                     }
                     
-                    # Insert into database
-                    success = insert_rate(cursor, rate_record, providers)
-                    if success:
-                        conn.commit()
-                        print(f"✅ Inserted rate: {sending_currency} → {destination_currency}: {rate_value}")
+                    # Insert into database (unless dry-run)
+                    if dry_run:
+                        print(f"[DRY-RUN] Would insert: {sending_currency} → {destination_currency}: {rate_value}")
                     else:
-                        conn.rollback()
-                        print(f"❌ Failed to insert rate: {sending_currency} → {destination_currency}")
+                        success = insert_rate(cursor, rate_record, providers)
+                        if success:
+                            conn.commit()
+                            print(f"✅ Inserted rate: {sending_currency} → {destination_currency}: {rate_value}")
+                        else:
+                            conn.rollback()
+                            print(f"❌ Failed to insert rate: {sending_currency} → {destination_currency}")
                     
                     # Print formatted output
                     print("{")
@@ -171,10 +180,28 @@ def main():
         print(f"Error processing rates: {str(e)}")
     finally:
         # Close database connection
-        cursor.close()
-        conn.close()
-        print("Database connection closed")
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+            print("Database connection closed")
+
+def main():
+    # Resolve dry-run from env and optional CLI when executed directly
+    # Env: DRY_RUN=1|true|yes|on
+    env_dry = os.getenv("DRY_RUN", "0").lower() in ("1", "true", "yes", "on")
+
+    # Only parse args when invoked as a script
+    dry_arg = None
+    if __name__ == "__main__":
+        parser = argparse.ArgumentParser(description="Fetch and optionally insert rates")
+        parser.add_argument("--dry-run", action="store_true", help="Run without DB writes")
+        args = parser.parse_args()
+        dry_arg = args.dry_run
+
+    # Precedence: CLI flag over env, default False
+    effective_dry = dry_arg if dry_arg is not None else env_dry
+    run(dry_run=effective_dry)
 
 if __name__ == "__main__":
     main()
-
