@@ -96,6 +96,18 @@ docker rm ace-rate-fetcher
 python main.py
 ```
 
+### Dry-run (no DB writes)
+
+- Env var:
+```bash
+DRY_RUN=1 python main.py
+```
+
+- CLI flag:
+```bash
+python main.py --dry-run
+```
+
 ### Running the scheduler
 
 The scheduler runs the rate fetcher at random intervals between 30-60 minutes:
@@ -108,6 +120,11 @@ or
 
 ```bash
 python scheduler.py
+```
+
+To dry-run the scheduler (skip DB writes in each cycle):
+```bash
+DRY_RUN=1 python scheduler.py
 ```
 
 The scheduler implements graceful shutdown handling via SIGTERM/SIGINT (Ctrl+C) signals.

@@ -37,6 +37,8 @@ def run_with_random_interval():
     global should_run
     
     logging.info("Ace rate provider fetcher scheduler started")
+    if os.getenv("DRY_RUN", "0").lower() in ("1", "true", "yes", "on"):
+        logging.info("Running in DRY-RUN mode (no DB writes)")
     
     while should_run:
         try:
