@@ -16,6 +16,13 @@
         "operating_countries": [
           "GB"
         ]
+      },
+      {
+        "sending_currency": "AUD",
+        "representative_country": "AUS",
+        "operating_countries": [
+          "AU"
+        ]
       }
     ],
     "receiving_countries": [
