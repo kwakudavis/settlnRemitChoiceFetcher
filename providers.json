@@ -28,7 +28,6 @@
     "receiving_countries": [
       { "receiving_country": "NGA", "receiving_currency": "NGN", "receiving_country_alpha2": "NG" , "receiving_country_name": "Nigeria"},
       { "receiving_country": "MAR", "receiving_currency": "MAD", "receiving_country_alpha2": "MA" , "receiving_country_name": "Morocco"},
-      { "receiving_country": "GHA", "receiving_currency": "GHS", "receiving_country_alpha2": "GH" , "receiving_country_name": "Ghana"},
       { "receiving_country": "ZAF", "receiving_currency": "ZAR", "receiving_country_alpha2": "ZA" , "receiving_country_name": "South-Africa"},
       { "receiving_country": "IND", "receiving_currency": "INR", "receiving_country_alpha2": "IN" , "receiving_country_name": "India"},
       { "receiving_country": "PAK", "receiving_currency": "PKR", "receiving_country_alpha2": "PK" , "receiving_country_name": "Pakistan"},
